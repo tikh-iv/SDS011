@@ -16,7 +16,15 @@ i.e. ```mySDS.begin(pinRX,pinTX);```
 ```int read(float *p25, float *p10);```
 i.e. ```error = mySDS(&pm25,&pm10);```
   
-Reads the PM2.5 and PM10 values, return code is 0, if new values were read, and 1 if there were no new values.  
+Reads the PM2.5 and PM10 values, return code is 0, if new values were read, and 1 if there were no new values.
+
+* Sleep Mode:
+```mySDS.sleep();```
+
+* Wakeup Mode:
+```mySDS.wakeup();```
+  
+During sleep mode, the fan & Laser stops working and the current draw is < 4 mA. The minimal run time of this sensor is 30 seconds.
 
 ### Alternative with HardwareSerial
 * SDS object can also be initialized with a Serial object as parameter  

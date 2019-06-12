@@ -6,7 +6,8 @@
 //
 // Documentation:
 //		- The iNovaFitness SDS011 datasheet
-//
+// Modified By Shachindra for Wake and Sleep Functionality
+// June 12, 2019
 
 #if ARDUINO >= 100
 	#include "Arduino.h"
