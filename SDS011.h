@@ -6,8 +6,7 @@
 //
 // Documentation:
 //		- The iNovaFitness SDS011 datasheet
-// Modified By Shachindra for Wake and Sleep Functionality
-// June 12, 2019
+//
 
 #if ARDUINO >= 100
 	#include "Arduino.h"
@@ -31,7 +30,9 @@ class SDS011 {
 		int read(float *p25, float *p10);
 		void sleep();
 		void wakeup();
+		void workmode(byte mode);
 	private:
+		byte mode;
 		uint8_t _pin_rx, _pin_tx;
 		Stream *sds_data;
 };
