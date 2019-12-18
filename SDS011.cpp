@@ -55,6 +55,28 @@ static const byte WAKECMD[19] = {
 	0xAB	// tail
 };
 
+static const byte MODECMD[19] = {
+0xAA,  // head
+0xB4,  // command id
+0x08,  // data byte 1
+0x01,  // data byte 2 (set mode)
+0x00,  // data byte 3 (0 for continuous, 1-30 for 1-30 min delay between turns on)
+0x00,  // data byte 4
+0x00,  // data byte 5
+0x00,  // data byte 6
+0x00,  // data byte 7
+0x00,  // data byte 8
+0x00,  // data byte 9
+0x00,  // data byte 10
+0x00,  // data byte 11
+0x00,  // data byte 12
+0x00,  // data byte 13
+0xFF,  // data byte 14 (device id byte 1)
+0xFF,  // data byte 15 (device id byte 2)
+0x07,  // checksum: 07 for 0x00, 08 for 0x01 and so on
+0xAB   // tail
+};
+
 SDS011::SDS011(void) {
 
 }
@@ -124,12 +146,21 @@ void SDS011::wakeup() {
 	}
 }
 
+// --------------------------------------------------------
+// SDS011:workmode
+// --------------------------------------------------------
 void SDS011::workmode(byte mode) {
-	byte cs = 7 + mode;
-	uint8_t MODECMD[] = {0xAA, 0xB4, 0x08, 0x01, mode, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, cs, 0xAB};      
-	//                                             ^^ 0 for continuous, 1-30 for 1-30 min delay between turns on.              ^^ checksum: 07 for 0x00, 08 for 0x01 and so on
+	byte cs = 7 + mode; // checksum: 07 for 0x00, 08 for 0x01 and so on
 	for (uint8_t i = 0; i < 19; i++) {
-		sds_data->write(WAKECMD[i]);
+		if (i == 4) {
+			sds_data->write(mode);
+		}
+		else if (i == 17){
+			sds_data->write(cs);
+		}
+		else{
+			sds_data->write(MODECMD[i]);
+		}
 	}
 	sds_data->flush();
 	while (sds_data->available() > 0) {
