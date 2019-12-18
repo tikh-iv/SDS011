@@ -124,6 +124,19 @@ void SDS011::wakeup() {
 	}
 }
 
+void SDS011::workmode(byte mode) {
+	byte cs = 7 + mode;
+	uint8_t MODECMD[] = {0xAA, 0xB4, 0x08, 0x01, mode, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, cs, 0xAB};      
+	//                                             ^^ 0 for continuous, 1-30 for 1-30 min delay between turns on.              ^^ checksum: 07 for 0x00, 08 for 0x01 and so on
+	for (uint8_t i = 0; i < 19; i++) {
+		sds_data->write(WAKECMD[i]);
+	}
+	sds_data->flush();
+	while (sds_data->available() > 0) {
+		sds_data->read();
+	}
+}
+
 #ifndef ESP32
 void SDS011::begin(uint8_t pin_rx, uint8_t pin_tx) {
 	_pin_rx = pin_rx;
@@ -135,17 +148,19 @@ void SDS011::begin(uint8_t pin_rx, uint8_t pin_tx) {
 
 	sds_data = softSerial;
 }
-#endif
+
 
 void SDS011::begin(HardwareSerial* serial) {
 	serial->begin(9600);
 	sds_data = serial;
 }
 
+#ifdef ESP32
 void SDS011::begin(HardwareSerial* serial, int8_t rxPin, int8_t txPin) {
 	serial->begin(9600, SERIAL_8N1, rxPin, txPin);
 	sds_data = serial;
 }
+#endif
 
 #ifndef ESP32
 void SDS011::begin(SoftwareSerial* serial) {
